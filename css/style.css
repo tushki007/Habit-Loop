@@ -46,3 +46,14 @@ body {
     border: none;
     border-radius: 8px;
 }
+.habit-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.habit-list li span {
+    font-size: 15px;
+}
