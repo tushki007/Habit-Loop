@@ -1,52 +1,79 @@
-// Habit Loop - Persistent Version
+// Habit Loop - Daily Tracking (FIXED)
 
 const habitInput = document.querySelector(".habit-input input");
 const addHabitBtn = document.querySelector(".habit-input button");
 const habitList = document.querySelector(".habit-list");
 
-// Load habits when page loads
-document.addEventListener("DOMContentLoaded", loadHabits);
+// Load on page load
+document.addEventListener("DOMContentLoaded", renderAll);
 
-// Button event
+// Add habit
 addHabitBtn.addEventListener("click", addHabit);
 
-// Get habits from LocalStorage
+// Get today's date
+function getToday() {
+    return new Date().toISOString().split("T")[0];
+}
+
+// Storage helpers
 function getHabits() {
     return JSON.parse(localStorage.getItem("habits")) || [];
 }
 
-// Save habits to LocalStorage
 function saveHabits(habits) {
     localStorage.setItem("habits", JSON.stringify(habits));
 }
 
-// Add habit
+// Add habit function
 function addHabit() {
-    const habitName = habitInput.value.trim();
-    if (habitName === "") return alert("Enter a habit");
+    const name = habitInput.value.trim();
+    if (!name) {
+        alert("Enter a habit");
+        return;
+    }
 
     const habits = getHabits();
 
-    const habit = {
+    habits.push({
         id: Date.now(),
-        name: habitName,
-        completed: false
-    };
+        name: name,
+        logs: {}
+    });
 
-    habits.push(habit);
     saveHabits(habits);
-
-    renderHabit(habit);
     habitInput.value = "";
+
+    renderAll(); // 🔥 IMPORTANT FIX
 }
 
-// Render single habit
+// Render all habits
+function renderAll() {
+    habitList.innerHTML = "";
+
+    const habits = getHabits();
+    habits.forEach(habit => {
+        renderHabit(habit);
+    });
+}
+
+// Render one habit
 function renderHabit(habit) {
+    const today = getToday();
+
+    // 🔒 SAFETY: ensure logs always exists
+    if (!habit.logs) {
+        habit.logs = {};
+        const habits = getHabits();
+        const index = habits.findIndex(h => h.id === habit.id);
+        habits[index] = habit;
+        saveHabits(habits);
+    }
+
     const li = document.createElement("li");
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    checkbox.checked = habit.completed;
+    checkbox.checked = habit.logs[today] === true;
 
     checkbox.addEventListener("change", () => {
         toggleHabit(habit.id);
@@ -59,18 +86,15 @@ function renderHabit(habit) {
     li.appendChild(span);
     habitList.appendChild(li);
 }
-
-// Load habits on refresh
-function loadHabits() {
-    const habits = getHabits();
-    habits.forEach(renderHabit);
-}
-
-// Toggle completion
+  
+// Toggle today log
 function toggleHabit(id) {
+    const today = getToday();
     const habits = getHabits();
+
     const habit = habits.find(h => h.id === id);
-    habit.completed = !habit.completed;
+    habit.logs[today] = !habit.logs[today];
+
     saveHabits(habits);
 }
 
