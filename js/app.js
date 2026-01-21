@@ -1,8 +1,16 @@
 // Habit Loop - Daily Tracking (FIXED)
+let barChartInstance = null;
+let pieChartInstance = null;
 
 const habitInput = document.querySelector(".habit-input input");
 const addHabitBtn = document.querySelector(".habit-input button");
 const habitList = document.querySelector(".habit-list");
+const reportBtn = document.getElementById("reportBtn");
+const reportDiv = document.getElementById("report");
+
+if (reportBtn) {
+    reportBtn.addEventListener("click", generateReport);
+}
 
 // Load on page load
 document.addEventListener("DOMContentLoaded", renderAll);
@@ -98,3 +106,93 @@ function toggleHabit(id) {
     saveHabits(habits);
 }
 
+function generateReport() {
+    const habits = getHabits();
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    reportDiv.innerHTML = "<h3>Monthly Report</h3>";
+
+    const habitNames = [];
+    const habitPercentages = [];
+
+    let totalCompleted = 0;
+    let totalPossible = habits.length * daysInMonth;
+
+    habits.forEach(habit => {
+        let completedDays = 0;
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateKey =
+                `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+            if (habit.logs && habit.logs[dateKey]) {
+                completedDays++;
+            }
+        }
+
+        totalCompleted += completedDays;
+
+        const percent = Math.round((completedDays / daysInMonth) * 100);
+
+        habitNames.push(habit.name);
+        habitPercentages.push(percent);
+
+        const p = document.createElement("p");
+        p.textContent = `${habit.name}: ${completedDays}/${daysInMonth} days (${percent}%)`;
+        reportDiv.appendChild(p);
+    });
+
+    drawBarChart(habitNames, habitPercentages);
+    drawPieChart(totalCompleted, totalPossible - totalCompleted);
+}
+function drawBarChart(labels, data) {
+    const canvas = document.getElementById("barChart");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    if (barChartInstance) barChartInstance.destroy();
+
+    barChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Consistency %",
+                data: data,
+                backgroundColor: "#4f46e5"
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+function drawPieChart(completed, missed) {
+    const canvas = document.getElementById("pieChart");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+
+    if (pieChartInstance) pieChartInstance.destroy();
+
+    pieChartInstance = new Chart(ctx, {
+        type: "pie",
+        data: {
+            labels: ["Completed", "Missed"],
+            datasets: [{
+                data: [completed, missed],
+                backgroundColor: ["#16a34a", "#dc2626"]
+            }]
+        }
+    });
+}

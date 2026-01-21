@@ -57,3 +57,6 @@ body {
 .habit-list li span {
     font-size: 15px;
 }
+canvas {
+    margin-top: 20px;
+}
