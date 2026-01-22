@@ -1,4 +1,20 @@
-* {
+:root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #111827;
+    --subtext: #6b7280;
+    --primary: #4f46e5;
+    --border: #e5e7eb;
+}
+body.dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #e5e7eb;
+    --subtext: #9ca3af;
+    --primary: #6366f1;
+    --border: #334155;
+}
+ {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -6,7 +22,9 @@
 }
 
 body {
-    background: #f5f7fb;
+    background: var(--bg);
+    color: var(--text);
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,6 +33,7 @@ body {
 
 .app {
     background: white;
+background: var(--card);
     width: 400px;
     padding: 25px;
     border-radius: 12px;
@@ -23,7 +42,9 @@ body {
 
 .subtitle {
     text-align: center;
-    color: #666;
+color: var(--subtext);
+
+    
     margin-bottom: 20px;
 }
 
@@ -36,14 +57,14 @@ body {
     flex: 1;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
 }
 
 .habit-input button {
     padding: 10px 15px;
-    background: #4f46e5;
+    background: var(--primary);
     color: white;
-    border: none;
+    border: 1px solid var(--border);
     border-radius: 8px;
 }
 .habit-list li {
@@ -59,4 +80,15 @@ body {
 }
 canvas {
     margin-top: 20px;
+}
+.theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 16px;
 }

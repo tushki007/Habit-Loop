@@ -7,6 +7,23 @@ const addHabitBtn = document.querySelector(".habit-input button");
 const habitList = document.querySelector(".habit-list");
 const reportBtn = document.getElementById("reportBtn");
 const reportDiv = document.getElementById("report");
+const themeToggle = document.getElementById("themeToggle");
+
+// Load saved theme
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    themeToggle.textContent = "🌞";
+}
+
+// Toggle theme
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    const isDark = document.body.classList.contains("dark");
+    themeToggle.textContent = isDark ? "🌞" : "🌙";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+});
 
 if (reportBtn) {
     reportBtn.addEventListener("click", generateReport);
